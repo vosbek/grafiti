@@ -1,0 +1,74 @@
+MIT License
+
+Copyright (c) 2025 CodeAnalysis MultiAgent MVP
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Third-Party Licenses
+
+This project incorporates several open-source libraries and frameworks:
+
+### AI/ML Components
+- **PyTorch**: BSD-3-Clause License
+- **Transformers (Hugging Face)**: Apache License 2.0
+- **Sentence Transformers**: Apache License 2.0
+- **CodeBERT (Microsoft)**: MIT License
+- **Graphiti Core**: MIT License
+
+### Backend Framework
+- **FastAPI**: MIT License
+- **Uvicorn**: BSD-3-Clause License
+- **Pydantic**: MIT License
+
+### Database & Storage
+- **Neo4j**: GPL v3 / Commercial License
+- **Redis**: BSD-3-Clause License
+- **PostgreSQL**: PostgreSQL License
+
+### Frontend Framework
+- **React**: MIT License
+- **TypeScript**: Apache License 2.0
+- **Material-UI**: MIT License
+- **Recharts**: MIT License
+- **vis-network**: Apache License 2.0
+
+### AWS Integration
+- **Boto3**: Apache License 2.0
+- **LiteLLM**: MIT License
+
+### Container Runtime
+- **Docker**: Apache License 2.0
+- **Podman**: Apache License 2.0
+
+For complete license information of all dependencies, please refer to the respective package documentation and the node_modules and site-packages directories after installation.
+
+---
+
+## Enterprise Usage Notice
+
+This software is designed for enterprise Java code analysis and may process proprietary source code. Organizations using this software should:
+
+1. Ensure compliance with their internal security policies
+2. Review data handling and storage practices
+3. Consider running in isolated environments for sensitive codebases
+4. Implement appropriate access controls and audit logging
+
+The authors and contributors are not responsible for any security implications arising from the analysis of proprietary or sensitive code using this software.

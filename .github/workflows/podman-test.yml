@@ -1,0 +1,88 @@
+name: Podman Compatibility Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'deploy_podman.py'
+      - 'validate_deployment_podman.py'
+      - 'podman-compose.verified.yml'
+      - 'PODMAN_DEPLOYMENT_GUIDE.md'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'deploy_podman.py'
+      - 'validate_deployment_podman.py'
+      - 'podman-compose.verified.yml'
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  podman-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Podman
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y podman
+        podman --version
+    
+    - name: Install podman-compose
+      run: |
+        pip install podman-compose
+        podman-compose --version
+    
+    - name: Test podman deployment script syntax
+      run: |
+        python -m py_compile deploy_podman.py
+        python -m py_compile validate_deployment_podman.py
+    
+    - name: Validate podman-compose file
+      run: |
+        podman-compose -f podman-compose.verified.yml config
+    
+    - name: Test podman basic functionality
+      run: |
+        podman run --rm hello-world
+    
+    - name: Test Neo4j container with podman
+      run: |
+        podman run -d --name test-neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/test123 neo4j:5.15
+        sleep 30
+        podman ps
+        curl -f http://localhost:7474 || exit 1
+        podman stop test-neo4j
+        podman rm test-neo4j
+    
+    - name: Test Redis container with podman
+      run: |
+        podman run -d --name test-redis -p 6379:6379 redis:7-alpine
+        sleep 10
+        podman ps
+        echo "PING" | nc localhost 6379 | grep PONG || exit 1
+        podman stop test-redis
+        podman rm test-redis
+    
+    - name: Validate podman deployment documentation
+      run: |
+        # Check that all podman-specific files exist
+        test -f deploy_podman.py
+        test -f validate_deployment_podman.py
+        test -f podman-compose.verified.yml
+        test -f PODMAN_DEPLOYMENT_GUIDE.md
+        test -f COMPLETE_PODMAN_SETUP.md
+        
+        # Verify no hardcoded docker commands in podman scripts
+        ! grep -r "docker " deploy_podman.py || exit 1
+        ! grep -r "docker " validate_deployment_podman.py || exit 1
+        
+        echo "✅ All podman compatibility checks passed"

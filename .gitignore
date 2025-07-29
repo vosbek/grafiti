@@ -1,0 +1,232 @@
+# CodeAnalysis MultiAgent MVP - Git Ignore File
+
+# Environment Files
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Node.js / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# Frontend Build
+frontend/build/
+frontend/dist/
+
+# Logs
+logs/
+*.log
+backend/logs/
+application.log
+debug.log
+error.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+neo4j_data/
+redis_data/
+
+# Analysis Results
+analysis-results/
+repositories/
+*.analysis
+embeddings/
+embeddings_cache/
+
+# AI Model Cache
+.cache/
+.transformers/
+.sentence-transformers/
+models/
+*.model
+*.bin
+*.safetensors
+
+# Docker & Container Files
+.dockerignore
+docker-compose.override.yml
+*.pid
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE Files
+*.swp
+*.swo
+*~
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Test Files
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Documentation Build
+docs/_build/
+docs/.doctrees/
+
+# Configuration Overrides
+config/local.yml
+config/production.yml
+config/development.yml
+
+# Certificates & Keys
+*.pem
+*.key
+*.crt
+*.p12
+keys/
+certificates/
+
+# GitHub & Git
+.git/
+*.patch
+*.diff
+
+# Mac
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Windows
+*.exe
+*.msi
+*.msm
+*.msp
+
+# JetBrains
+*.iws
+out/
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# AWS & Cloud
+.aws/
+.gcp/
+.azure/
+
+# Large Files
+*.avi
+*.flv
+*.mkv
+*.mov
+*.mp4
+*.mpeg
+*.mpg
+*.ogv
+*.webm
+
+# Enterprise GitHub Specific
+.github-enterprise/
+enterprise-config/
+
+# Podman/Docker Volumes
+*_data/
+neo4j_logs/
+neo4j_import/
+neo4j_plugins/
+redis_data/
+repository_data/
+analysis_data/
+backend_logs/
+
+# Startup Scripts (will be generated)
+start_backend*.sh
+start_backend*.bat
+start_frontend*.sh
+start_frontend*.bat
+start_bedrock_proxy*.sh
+start_bedrock_proxy*.bat
+
+# Validation Reports
+validation_report*.json
+deployment_report*.json
+debug_info.txt
+
+# Lock Files (keep package-lock.json but ignore others)
+yarn.lock
+poetry.lock
+Pipfile.lock

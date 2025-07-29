@@ -1,0 +1,267 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: codeanalysis-config
+  namespace: codeanalysis
+  labels:
+    app.kubernetes.io/name: codeanalysis-multiagent-mvp
+    app.kubernetes.io/component: configuration
+data:
+  # Application Configuration
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  
+  # Database Configuration
+  NEO4J_URI: "bolt://neo4j:7687"
+  NEO4J_DATABASE: "neo4j"
+  POSTGRES_HOST: "postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DATABASE: "codeanalysis"
+  REDIS_URL: "redis://redis:6379"
+  
+  # CodeBERT Configuration
+  CODEBERT_MODEL: "microsoft/codebert-base"
+  EMBEDDING_DIMENSION: "768"
+  MAX_SEQUENCE_LENGTH: "512"
+  EMBEDDING_BATCH_SIZE: "16"
+  
+  # Performance Configuration
+  THREAD_POOL_SIZE: "20"
+  CONNECTION_POOL_SIZE: "20"
+  MAX_CONCURRENT_CLONES: "8"
+  MAX_CONCURRENT_AGENTS: "6"
+  
+  # Repository Configuration
+  WORKSPACE_DIR: "/app/repositories"
+  MAX_REPOSITORY_SIZE_GB: "10.0"
+  MAX_FILE_SIZE_MB: "5.0"
+  
+  # Analysis Configuration
+  SUPPORTED_EXTENSIONS: ".java,.jsp,.xml,.properties,.gradle,.pom"
+  
+  # Background Jobs
+  CELERY_BROKER_URL: "redis://redis:6379/1"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/2"
+  
+  # Monitoring
+  ENABLE_METRICS: "true"
+  ENABLE_TRACING: "true"
+  LOG_LEVEL: "INFO"
+  
+  # Enterprise Features
+  ENABLE_AUTH: "false"
+  MAX_USERS: "100"
+  MAX_REPOSITORIES_PER_USER: "50"
+  
+  # Agent Configuration
+  AGENT_TIMEOUT_SECONDS: "300"
+  
+  # Hardware Detection (will be overridden by startup script)
+  DEVICE: "cpu"
+  CPU_CORES: "4"
+  MEMORY_GB: "8"
+  GPU_AVAILABLE: "false"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: neo4j-config
+  namespace: codeanalysis
+  labels:
+    app.kubernetes.io/name: codeanalysis-multiagent-mvp
+    app.kubernetes.io/component: neo4j
+data:
+  NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
+  NEO4J_dbms_security_procedures_unrestricted: "apoc.*,gds.*"
+  NEO4J_dbms_memory_heap_initial_size: "2G"
+  NEO4J_dbms_memory_heap_max_size: "4G"
+  NEO4J_dbms_memory_pagecache_size: "2G"
+  NEO4J_dbms_connector_bolt_listen__address: "0.0.0.0:7687"
+  NEO4J_dbms_connector_http_listen__address: "0.0.0.0:7474"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: codeanalysis
+  labels:
+    app.kubernetes.io/name: codeanalysis-multiagent-mvp
+    app.kubernetes.io/component: postgres
+data:
+  POSTGRES_DB: "codeanalysis"
+  POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+  POSTGRES_MAX_CONNECTIONS: "200"
+  POSTGRES_SHARED_BUFFERS: "256MB"
+  POSTGRES_EFFECTIVE_CACHE_SIZE: "1GB"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: codeanalysis
+  labels:
+    app.kubernetes.io/name: codeanalysis-multiagent-mvp
+    app.kubernetes.io/component: redis
+data:
+  redis.conf: |
+    # Redis Configuration for CodeAnalysis
+    
+    # Network
+    bind 0.0.0.0
+    port 6379
+    
+    # Memory
+    maxmemory 2gb
+    maxmemory-policy allkeys-lru
+    
+    # Persistence
+    appendonly yes
+    appendfsync everysec
+    
+    # Performance
+    tcp-keepalive 300
+    timeout 0
+    
+    # Logging
+    loglevel notice
+    
+    # Security
+    protected-mode no
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: codeanalysis
+  labels:
+    app.kubernetes.io/name: codeanalysis-multiagent-mvp
+    app.kubernetes.io/component: nginx
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+    
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+        
+        access_log /var/log/nginx/access.log main;
+        
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        
+        # Gzip compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types
+            text/plain
+            text/css
+            text/xml
+            text/javascript
+            application/json
+            application/javascript
+            application/xml+rss
+            application/atom+xml
+            image/svg+xml;
+        
+        # Rate limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/m;
+        
+        # Upstream backends
+        upstream backend {
+            least_conn;
+            server codeanalysis-backend:8000;
+        }
+        
+        upstream frontend {
+            server codeanalysis-frontend:80;
+        }
+        
+        # Main server block
+        server {
+            listen 80;
+            server_name _;
+            
+            # Security headers
+            add_header X-Frame-Options DENY;
+            add_header X-Content-Type-Options nosniff;
+            add_header X-XSS-Protection "1; mode=block";
+            add_header Referrer-Policy strict-origin-when-cross-origin;
+            
+            # API routes
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_connect_timeout 60s;
+                proxy_send_timeout 300s;
+                proxy_read_timeout 300s;
+                client_max_body_size 100M;
+            }
+            
+            # Authentication routes (more restrictive)
+            location /api/v1/auth/ {
+                limit_req zone=auth burst=5 nodelay;
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Health check (no rate limiting)
+            location /api/v1/health {
+                proxy_pass http://backend;
+                access_log off;
+            }
+            
+            # Metrics endpoint (restricted)
+            location /metrics {
+                allow 10.0.0.0/8;
+                allow 172.16.0.0/12;
+                allow 192.168.0.0/16;
+                deny all;
+                proxy_pass http://backend;
+            }
+            
+            # Frontend routes
+            location / {
+                proxy_pass http://frontend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Static files with caching
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+                proxy_pass http://frontend;
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+        }
+    }

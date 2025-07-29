@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+        "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+    
+    <!-- Form Bean Definitions -->
+    <form-beans>
+        <form-bean name="loginForm" type="com.legacybank.web.forms.LoginForm"/>
+        <form-bean name="accountForm" type="com.legacybank.web.forms.AccountForm"/>
+        <form-bean name="transferForm" type="com.legacybank.web.forms.TransferForm"/>
+        <form-bean name="customerRegistrationForm" type="com.legacybank.web.forms.CustomerRegistrationForm"/>
+        <form-bean name="passwordChangeForm" type="com.legacybank.web.forms.PasswordChangeForm"/>
+        <form-bean name="transactionSearchForm" type="com.legacybank.web.forms.TransactionSearchForm"/>
+    </form-beans>
+
+    <!-- Global Exceptions -->
+    <global-exceptions>
+        <exception key="error.system.unavailable"
+                  type="com.legacybank.common.SystemException"
+                  path="/error.jsp"/>
+        <exception key="error.security.violation"
+                  type="com.legacybank.security.SecurityException"
+                  path="/security-error.jsp"/>
+        <exception key="error.validation.failed"
+                  type="com.legacybank.common.ValidationException"
+                  path="/validation-error.jsp"/>
+        <exception key="error.business.rule.violation"
+                  type="com.legacybank.common.BusinessRuleException"
+                  path="/business-error.jsp"/>
+    </global-exceptions>
+
+    <!-- Global Forwards -->
+    <global-forwards>
+        <forward name="login" path="/login.do" redirect="true"/>
+        <forward name="logout" path="/logout.do" redirect="true"/>
+        <forward name="home" path="/dashboard.do" redirect="true"/>
+        <forward name="error" path="/error.jsp"/>
+        <forward name="sessionTimeout" path="/session-timeout.jsp"/>
+    </global-forwards>
+
+    <!-- Action Mappings -->
+    <action-mappings>
+        
+        <!-- Authentication Actions -->
+        <action path="/login"
+                type="com.legacybank.web.LoginAction"
+                name="loginForm"
+                scope="request"
+                validate="true"
+                input="/login.jsp">
+            <forward name="success" path="/dashboard.do" redirect="true"/>
+            <forward name="input" path="/login.jsp"/>
+            <forward name="changePassword" path="/change-password.do"/>
+            <forward name="acceptTerms" path="/accept-terms.do"/>
+            <forward name="premiumDashboard" path="/premium-dashboard.do"/>
+            <forward name="dashboard" path="/dashboard.do"/>
+            <forward name="security" path="/security-check.jsp"/>
+            <forward name="error" path="/error.jsp"/>
+        </action>
+
+        <action path="/logout"
+                type="com.legacybank.web.LogoutAction">
+            <forward name="success" path="/login.jsp" redirect="true"/>
+        </action>
+
+        <!-- Dashboard Actions -->
+        <action path="/dashboard"
+                type="com.legacybank.web.DashboardAction">
+            <forward name="success" path="/dashboard.jsp"/>
+            <forward name="premium" path="/premium-dashboard.jsp"/>
+        </action>
+
+        <action path="/premium-dashboard"
+                type="com.legacybank.web.PremiumDashboardAction">
+            <forward name="success" path="/premium-dashboard.jsp"/>
+        </action>
+
+        <!-- Account Management Actions -->
+        <action path="/account-summary"
+                type="com.legacybank.web.AccountSummaryAction">
+            <forward name="success" path="/account-summary.jsp"/>
+            <forward name="noAccounts" path="/no-accounts.jsp"/>
+        </action>
+
+        <action path="/account-details"
+                type="com.legacybank.web.AccountDetailsAction"
+                parameter="accountNumber">
+            <forward name="success" path="/account-details.jsp"/>
+            <forward name="notFound" path="/account-not-found.jsp"/>
+            <forward name="unauthorized" path="/unauthorized.jsp"/>
+        </action>
+
+        <action path="/create-account"
+                type="com.legacybank.web.CreateAccountAction"
+                name="accountForm"
+                scope="request"
+                validate="true"
+                input="/create-account.jsp">
+            <forward name="success" path="/account-created.jsp"/>
+            <forward name="input" path="/create-account.jsp"/>
+            <forward name="eligibilityCheck" path="/eligibility-check.jsp"/>
+        </action>
+
+        <!-- Transaction Actions -->
+        <action path="/transfer-funds"
+                type="com.legacybank.web.TransferAction"
+                name="transferForm"
+                scope="request"
+                validate="true"
+                input="/transfer-funds.jsp">
+            <forward name="success" path="/transfer-confirmation.jsp"/>
+            <forward name="input" path="/transfer-funds.jsp"/>
+            <forward name="confirm" path="/confirm-transfer.jsp"/>
+            <forward name="insufficientFunds" path="/insufficient-funds.jsp"/>
+            <forward name="dailyLimitExceeded" path="/daily-limit-exceeded.jsp"/>
+        </action>
+
+        <action path="/withdrawal"
+                type="com.legacybank.web.WithdrawalAction"
+                name="transactionForm"
+                scope="request"
+                validate="true"
+                input="/withdrawal.jsp">
+            <forward name="success" path="/withdrawal-confirmation.jsp"/>
+            <forward name="input" path="/withdrawal.jsp"/>
+            <forward name="confirm" path="/confirm-withdrawal.jsp"/>
+            <forward name="overdraftWarning" path="/overdraft-warning.jsp"/>
+        </action>
+
+        <action path="/deposit"
+                type="com.legacybank.web.DepositAction"
+                name="transactionForm"
+                scope="request"
+                validate="true"
+                input="/deposit.jsp">
+            <forward name="success" path="/deposit-confirmation.jsp"/>
+            <forward name="input" path="/deposit.jsp"/>
+            <forward name="holdNotice" path="/deposit-hold-notice.jsp"/>
+        </action>
+
+        <!-- Transaction History -->
+        <action path="/transaction-history"
+                type="com.legacybank.web.TransactionHistoryAction"
+                name="transactionSearchForm"
+                scope="request"
+                validate="false">
+            <forward name="success" path="/transaction-history.jsp"/>
+            <forward name="noResults" path="/no-transactions.jsp"/>
+        </action>
+
+        <action path="/export-transactions"
+                type="com.legacybank.web.ExportTransactionsAction"
+                parameter="format">
+            <forward name="pdf" path="/transaction-export.pdf"/>
+            <forward name="csv" path="/transaction-export.csv"/>
+            <forward name="error" path="/export-error.jsp"/>
+        </action>
+
+        <!-- Customer Profile Actions -->
+        <action path="/customer-profile"
+                type="com.legacybank.web.CustomerProfileAction">
+            <forward name="success" path="/customer-profile.jsp"/>
+            <forward name="premium" path="/premium-profile.jsp"/>
+        </action>
+
+        <action path="/update-profile"
+                type="com.legacybank.web.UpdateProfileAction"
+                name="customerProfileForm"
+                scope="request"
+                validate="true"
+                input="/update-profile.jsp">
+            <forward name="success" path="/profile-updated.jsp"/>
+            <forward name="input" path="/update-profile.jsp"/>
+            <forward name="verification" path="/profile-verification.jsp"/>
+        </action>
+
+        <action path="/change-password"
+                type="com.legacybank.web.ChangePasswordAction"
+                name="passwordChangeForm"
+                scope="request"
+                validate="true"
+                input="/change-password.jsp">
+            <forward name="success" path="/password-changed.jsp"/>
+            <forward name="input" path="/change-password.jsp"/>
+            <forward name="expired" path="/password-expired.jsp"/>
+        </action>
+
+        <!-- Security Actions -->
+        <action path="/security-settings"
+                type="com.legacybank.web.SecuritySettingsAction">
+            <forward name="success" path="/security-settings.jsp"/>
+        </action>
+
+        <action path="/mfa-setup"
+                type="com.legacybank.web.MFASetupAction">
+            <forward name="success" path="/mfa-setup.jsp"/>
+            <forward name="complete" path="/mfa-complete.jsp"/>
+            <forward name="qrCode" path="/mfa-qr-code.jsp"/>
+        </action>
+
+        <!-- Admin Actions (High-privilege operations) -->
+        <action path="/admin/customer-search"
+                type="com.legacybank.web.admin.CustomerSearchAction"
+                roles="ADMIN,MANAGER">
+            <forward name="success" path="/admin/customer-search.jsp"/>
+            <forward name="results" path="/admin/customer-results.jsp"/>
+        </action>
+
+        <action path="/admin/transaction-monitoring"
+                type="com.legacybank.web.admin.TransactionMonitoringAction"
+                roles="ADMIN,COMPLIANCE">
+            <forward name="success" path="/admin/transaction-monitoring.jsp"/>
+            <forward name="suspicious" path="/admin/suspicious-transactions.jsp"/>
+        </action>
+
+        <action path="/admin/account-maintenance"
+                type="com.legacybank.web.admin.AccountMaintenanceAction"
+                roles="ADMIN">
+            <forward name="success" path="/admin/account-maintenance.jsp"/>
+            <forward name="locked" path="/admin/locked-accounts.jsp"/>
+            <forward name="dormant" path="/admin/dormant-accounts.jsp"/>
+        </action>
+
+        <!-- Reporting Actions -->
+        <action path="/reports/monthly-statement"
+                type="com.legacybank.web.reports.MonthlyStatementAction">
+            <forward name="success" path="/reports/monthly-statement.jsp"/>
+            <forward name="pdf" path="/reports/monthly-statement.pdf"/>
+        </action>
+
+        <action path="/reports/year-end-summary"
+                type="com.legacybank.web.reports.YearEndSummaryAction">
+            <forward name="success" path="/reports/year-end-summary.jsp"/>
+            <forward name="tax" path="/reports/tax-summary.jsp"/>
+        </action>
+
+        <!-- Help and Support -->
+        <action path="/support/contact"
+                type="com.legacybank.web.support.ContactSupportAction">
+            <forward name="success" path="/support/contact.jsp"/>
+            <forward name="submitted" path="/support/ticket-created.jsp"/>
+        </action>
+
+        <action path="/support/faq"
+                type="com.legacybank.web.support.FAQAction">
+            <forward name="success" path="/support/faq.jsp"/>
+        </action>
+
+    </action-mappings>
+
+    <!-- Message Resources -->
+    <message-resources parameter="com.legacybank.resources.ApplicationResources"/>
+    <message-resources parameter="com.legacybank.resources.ValidationMessages" key="validation"/>
+    <message-resources parameter="com.legacybank.resources.SecurityMessages" key="security"/>
+
+    <!-- Request Processor -->
+    <controller 
+        processorClass="com.legacybank.web.BankingRequestProcessor"
+        maxFileSize="2M"
+        memFileSize="1M"
+        tempDir="/tmp"/>
+
+    <!-- Plug-ins -->
+    <plug-in className="org.apache.struts.tiles.TilesPlugin">
+        <set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml"/>
+        <set-property property="moduleAware" value="true"/>
+    </plug-in>
+
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+    </plug-in>
+
+    <plug-in className="com.legacybank.web.plugins.SecurityPlugin">
+        <set-property property="loginRequired" value="true"/>
+        <set-property property="sessionTimeout" value="15"/>
+        <set-property property="maxLoginAttempts" value="3"/>
+    </plug-in>
+
+    <plug-in className="com.legacybank.web.plugins.AuditPlugin">
+        <set-property property="auditLevel" value="ALL"/>
+        <set-property property="auditDatabase" value="true"/>
+        <set-property property="auditFile" value="true"/>
+    </plug-in>
+
+</struts-config>
