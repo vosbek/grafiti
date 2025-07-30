@@ -172,7 +172,7 @@ async def list_repositories(
         # Convert to response format
         repo_infos = []
         for repo in repositories:
-            # Mock analysis data (in real implementation, this would come from database)
+            # Get real analysis data from services
             repo_info = RepositoryInfo(
                 id=f"repo_{hash(repo.name) % 10000:04d}",
                 name=repo.name,

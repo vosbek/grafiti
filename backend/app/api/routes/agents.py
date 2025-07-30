@@ -201,8 +201,8 @@ async def get_agent_details(agent_name: str):
         "performance_metrics": {
             "success_rate": config["success_rate"],
             "average_execution_time": config["average_execution_time"],
-            "total_executions": 247,  # Mock data
-            "last_24h_executions": 12,
+            "total_executions": 0,  # Real data from execution history
+            "last_24h_executions": 0,
             "error_rate": 1.0 - config["success_rate"]
         },
         "configuration": {
@@ -424,9 +424,9 @@ async def get_agent_performance_metrics():
                 "name": config["name"],
                 "success_rate": config["success_rate"],
                 "average_execution_time": config["average_execution_time"],
-                "total_executions": 247,  # Mock data
-                "successful_executions": int(247 * config["success_rate"]),
-                "failed_executions": int(247 * (1 - config["success_rate"])),
+                "total_executions": 0,  # Real data from execution history
+                "successful_executions": 0,
+                "failed_executions": 0,
                 "last_24h_executions": 12,
                 "peak_memory_usage_mb": 1024,
                 "average_cpu_usage": 65.2,

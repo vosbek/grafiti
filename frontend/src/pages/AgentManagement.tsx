@@ -75,11 +75,12 @@ const AgentManagement: React.FC = () => {
   const [selectedRepositories, setSelectedRepositories] = useState<string[]>([]);
   const [executionParameters, setExecutionParameters] = useState<string>('{}');
 
-  // Mock repositories (would come from API)
-  const availableRepositories = ['repo1', 'repo2', 'repo3', 'legacy-banking-app'];
+  // Get repositories from API
+  const [availableRepositories, setAvailableRepositories] = useState<string[]>([]);
 
   useEffect(() => {
     loadAgents();
+    loadRepositories();
     
     // Refresh data every 30 seconds
     const interval = setInterval(() => {
@@ -89,6 +90,18 @@ const AgentManagement: React.FC = () => {
     
     return () => clearInterval(interval);
   }, []);
+
+  const loadRepositories = async () => {
+    try {
+      const response = await apiService.getRepositories();
+      const repoNames = response.repositories.map(repo => repo.name);
+      setAvailableRepositories(repoNames);
+    } catch (err) {
+      console.error('Failed to load repositories:', err);
+      // Fallback to empty array if repositories can't be loaded
+      setAvailableRepositories([]);
+    }
+  };
 
   useEffect(() => {
     // Poll running jobs more frequently

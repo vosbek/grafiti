@@ -97,12 +97,8 @@ async def semantic_search(
                     highlights=result.get("highlights", [])
                 ))
         else:
-            # Mock results for demonstration
-            search_results = await _generate_mock_search_results(
-                request.query, 
-                max_results, 
-                filters
-            )
+            # No CodeBERT service available - return empty results
+            search_results = []
         
         # Apply repository filters if specified
         if 'repositories' in filters:
@@ -211,8 +207,8 @@ async def relationship_search(
                     strength=rel.get('strength', 0.5)
                 ))
         else:
-            # Mock relationships for demonstration
-            relationships = await _generate_mock_relationships(request.entity)
+            # No Graphiti service available - return empty relationships
+            relationships = {}
         
         # Generate dependency graph data for visualization
         if relationships:
@@ -396,180 +392,7 @@ async def get_entity_details(entity_id: str, app_request: Request):
 
 # Helper functions
 
-async def _generate_mock_search_results(query: str, max_results: int, filters: dict) -> List[SearchResult]:
-    """Generate mock search results for demonstration."""
-    
-    results = []
-    
-    # Generate results based on common query patterns
-    if "payment" in query.lower():
-        results.extend([
-            SearchResult(
-                entity={
-                    "id": "PaymentService_processPayment",
-                    "type": "method",
-                    "name": "processPayment",
-                    "signature": "public PaymentResult processPayment(PaymentRequest request)",
-                    "file_path": "src/main/java/com/example/service/PaymentService.java",
-                    "line_number": 45,
-                    "complexity": 7.5
-                },
-                similarity_score=0.92,
-                relevance_score=0.88,
-                highlights=["payment processing logic", "validation", "transaction"]
-            ),
-            SearchResult(
-                entity={
-                    "id": "PaymentController_handlePayment",
-                    "type": "method",
-                    "name": "handlePayment",
-                    "signature": "public ActionForward handlePayment(ActionMapping mapping, ActionForm form)",
-                    "file_path": "src/main/java/com/example/controller/PaymentController.java",
-                    "line_number": 23,
-                    "complexity": 5.2
-                },
-                similarity_score=0.89,
-                relevance_score=0.85,
-                highlights=["payment handler", "struts action", "form validation"]
-            )
-        ])
-    
-    if "user" in query.lower() or "auth" in query.lower():
-        results.extend([
-            SearchResult(
-                entity={
-                    "id": "UserService_authenticateUser",
-                    "type": "method",
-                    "name": "authenticateUser",
-                    "signature": "public boolean authenticateUser(String username, String password)",
-                    "file_path": "src/main/java/com/example/service/UserService.java",
-                    "line_number": 67,
-                    "complexity": 4.8
-                },
-                similarity_score=0.85,
-                relevance_score=0.82,
-                highlights=["user authentication", "credential validation", "session"]
-            ),
-            SearchResult(
-                entity={
-                    "id": "AuthFilter_doFilter",
-                    "type": "method",
-                    "name": "doFilter",
-                    "signature": "public void doFilter(ServletRequest request, ServletResponse response)",
-                    "file_path": "src/main/java/com/example/filter/AuthFilter.java",
-                    "line_number": 34,
-                    "complexity": 6.1
-                },
-                similarity_score=0.83,
-                relevance_score=0.79,
-                highlights=["authentication filter", "session check", "authorization"]
-            )
-        ])
-    
-    if "database" in query.lower() or "dao" in query.lower():
-        results.extend([
-            SearchResult(
-                entity={
-                    "id": "UserDAO_findByUsername",
-                    "type": "method",
-                    "name": "findByUsername",
-                    "signature": "public User findByUsername(String username)",
-                    "file_path": "src/main/java/com/example/dao/UserDAO.java",
-                    "line_number": 89,
-                    "complexity": 3.2
-                },
-                similarity_score=0.87,
-                relevance_score=0.84,
-                highlights=["database access", "user lookup", "JDBC query"]
-            )
-        ])
-    
-    # Default generic results if no specific pattern matches
-    if not results:
-        results.extend([
-            SearchResult(
-                entity={
-                    "id": "BaseService_handleRequest",
-                    "type": "method",
-                    "name": "handleRequest",
-                    "signature": "protected void handleRequest(HttpServletRequest request)",
-                    "file_path": "src/main/java/com/example/base/BaseService.java",
-                    "line_number": 12,
-                    "complexity": 2.5
-                },
-                similarity_score=0.75,
-                relevance_score=0.72,
-                highlights=["request handling", "base functionality"]
-            ),
-            SearchResult(
-                entity={
-                    "id": "ApplicationConfig",
-                    "type": "class",
-                    "name": "ApplicationConfig",
-                    "signature": "public class ApplicationConfig",
-                    "file_path": "src/main/java/com/example/config/ApplicationConfig.java",
-                    "line_number": 1,
-                    "complexity": 8.9
-                },
-                similarity_score=0.70,
-                relevance_score=0.68,
-                highlights=["application configuration", "system setup"]
-            )
-        ])
-    
-    return results[:max_results]
-
-
-async def _generate_mock_relationships(entity: str) -> Dict[str, List[Relationship]]:
-    """Generate mock relationships for demonstration."""
-    
-    relationships = {
-        "uses": [
-            Relationship(
-                source=entity,
-                target="DatabaseConnection",
-                type="uses",
-                description=f"{entity} uses database connection for data access",
-                strength=0.8
-            ),
-            Relationship(
-                source=entity,
-                target="Logger",
-                type="uses",
-                description=f"{entity} uses logging for audit trail",
-                strength=0.6
-            )
-        ],
-        "extends": [
-            Relationship(
-                source=entity,
-                target="BaseService",
-                type="extends",
-                description=f"{entity} extends base service functionality",
-                strength=0.9
-            )
-        ],
-        "implements": [
-            Relationship(
-                source=entity,
-                target="BusinessService",
-                type="implements",
-                description=f"{entity} implements business service interface",
-                strength=0.95
-            )
-        ],
-        "called_by": [
-            Relationship(
-                source="Controller",
-                target=entity,
-                type="called_by",
-                description=f"Controller invokes {entity} for business logic",
-                strength=0.85
-            )
-        ]
-    }
-    
-    return relationships
+# Mock functions removed - using real data only
 
 
 def _generate_dependency_graph(entity: str, relationships: Dict[str, List[Relationship]]) -> Dict[str, Any]:

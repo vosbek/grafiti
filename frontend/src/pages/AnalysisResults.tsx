@@ -81,109 +81,18 @@ const AnalysisResults: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      // Mock data - in real implementation, this would come from API
-      const mockResults: ComprehensiveAnalysisResponse[] = [
-        {
-          success: true,
-          job_id: 'analysis_001',
-          status: 'completed',
-          analysis_id: 'comprehensive_001',
-          message: 'Analysis completed successfully',
-          timestamp: new Date().toISOString(),
-          supervisor_summary: 'Comprehensive analysis of 15 Java repositories completed. Found 47 architectural issues, 23 security vulnerabilities, and 156 legacy code patterns requiring modernization.',
-          agent_results: {
-            architecture_analyzer: {
-              agent_name: 'architecture_analyzer',
-              status: 'completed',
-              findings: [
-                {
-                  type: 'architecture',
-                  name: 'Tight Coupling Detected',
-                  description: 'High coupling between controller and DAO layers detected in payment module',
-                  impact: 'high',
-                  affected_components: ['PaymentController', 'PaymentDAO'],
-                  recommendation: 'Introduce service layer to reduce coupling'
-                },
-                {
-                  type: 'architecture',
-                  name: 'Missing Interface Segregation',
-                  description: 'Large interfaces violating Interface Segregation Principle',
-                  impact: 'medium',
-                  affected_components: ['UserService', 'ProductService'],
-                  recommendation: 'Split large interfaces into smaller, focused ones'
-                }
-              ],
-              execution_time: 45.2,
-              confidence_score: 0.89
-            },
-            security_analyzer: {
-              agent_name: 'security_analyzer',
-              status: 'completed',
-              findings: [
-                {
-                  type: 'security',
-                  name: 'SQL Injection Vulnerability',
-                  description: 'Potential SQL injection in user authentication module',
-                  impact: 'critical',
-                  affected_components: ['UserDAO.authenticate'],
-                  recommendation: 'Use parameterized queries or ORM'
-                },
-                {
-                  type: 'security',
-                  name: 'Weak Session Management',
-                  description: 'Session IDs not regenerated after authentication',
-                  impact: 'high',
-                  affected_components: ['SessionManager'],
-                  recommendation: 'Implement session regeneration on login'
-                }
-              ],
-              execution_time: 38.7,
-              confidence_score: 0.94
-            }
-          },
-          synthesized_response: 'The analysis reveals significant technical debt in legacy Struts applications with critical security vulnerabilities requiring immediate attention. Migration to modern frameworks is recommended.',
-          code_references: [
-            {
-              file: 'src/main/java/com/example/dao/UserDAO.java',
-              lines: [45, 67],
-              relevance_score: 0.95,
-              context: 'SQL injection vulnerability in authentication method'
-            }
-          ],
-          relationships: [
-            {
-              source: 'PaymentController',
-              target: 'PaymentDAO',
-              type: 'depends_on',
-              description: 'Direct dependency causing tight coupling',
-              strength: 0.8
-            }
-          ],
-          recommendations: [
-            {
-              priority: 'critical',
-              category: 'security',
-              title: 'Immediate Security Remediation',
-              description: 'Address SQL injection vulnerabilities in authentication system',
-              effort_estimate: '2-3 weeks',
-              risk_level: 'critical'
-            },
-            {
-              priority: 'high',
-              category: 'architecture',
-              title: 'Decouple Architecture Layers',
-              description: 'Introduce service layer to reduce coupling between controllers and DAOs',
-              effort_estimate: '4-6 weeks',
-              risk_level: 'medium'
-            }
-          ],
-          completion_time: new Date().toISOString()
-        }
-      ];
+      // Get all analysis results from API
+      const response = await fetch('/api/v1/analysis/results');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch analysis results: ${response.statusText}`);
+      }
       
-      setAnalysisResults(mockResults);
-      if (mockResults.length > 0) {
-        setSelectedAnalysis(mockResults[0]);
+      const data = await response.json();
+      const results = data.results || [];
+      
+      setAnalysisResults(results);
+      if (results.length > 0) {
+        setSelectedAnalysis(results[0]);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load analysis results');

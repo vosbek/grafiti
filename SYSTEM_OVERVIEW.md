@@ -1,53 +1,104 @@
-# CodeAnalysis MultiAgent MVP - Complete System Overview
+# CodeAnalysis MultiAgent MVP - System Overview
 
-## 🚀 Single Command Setup
+## 🚀 **Universal Deployment Commands**
 
 ```bash
-# Complete setup with AWS validation
+# Complete setup with AWS Bedrock validation
 python setup.py
 
-# Quick start (skip validation)
+# Quick start (skip validation for faster startup)
 python setup.py --quick
 
-# Teardown everything
-python setup.py --teardown-only
+# Aggressive cleanup (handles port conflicts)
+python setup.py --force-kill-ports --kill-port-processes
+
+# Complete teardown
+python setup.py --teardown-only --clean-volumes
 ```
 
-## 🏗️ System Architecture
+## 🏗️ **Production Architecture**
 
-### Core Components
+### **Service Topology**
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │    Backend      │    │   Bedrock       │
-│   React TS      │◄──►│   FastAPI       │◄──►│   Proxy         │
-│   Port: 3000    │    │   Port: 8000    │    │   Port: 8001    │
+│   Frontend      │    │    Backend      │    │   LiteLLM       │
+│   React TS      │◄──►│   FastAPI       │◄──►│   Bedrock       │
+│   Port: 3000    │    │   Port: 8000    │    │   Proxy: 8001   │
+│   Material-UI   │    │   Async/Await   │    │   OpenAI API    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          │                       ▼                       ▼
          │              ┌─────────────────┐    ┌─────────────────┐
          │              │     Neo4j       │    │  AWS Bedrock    │
          │              │   Port: 7687    │    │  Claude 3       │
-         │              │   (Graph DB)    │    │  Sonnet         │
+         │              │   APOC Plugins  │    │  Sonnet         │
          │              └─────────────────┘    └─────────────────┘
          │                       │
          │                       ▼
          │              ┌─────────────────┐
          └─────────────►│     Redis       │
                         │   Port: 6379    │
-                        │   (Cache)       │
+                        │   Embeddings    │
+                        │   Cache         │
                         └─────────────────┘
 ```
 
-## 🔧 Service Details
+## 🔧 **Service Details**
 
-### Frontend (React TypeScript)
-- **Purpose**: Web dashboard for code analysis visualization
-- **Port**: 3000
+### **Frontend Dashboard (React TypeScript)**
+- **Purpose**: Enterprise web interface for code analysis
+- **Port**: 3000 (configurable)
+- **Technology**: React 18.2 + TypeScript 5.3 + Material-UI 5.15
 - **Key Features**:
-  - Repository management interface
-  - Code analysis results visualization
-  - Semantic search interface
+  - 📊 System health monitoring dashboard
+  - 📁 Repository management with Git integration
+  - 🔍 Semantic code search interface
+  - 🤖 Multi-agent execution controls
+  - 📈 Analysis results visualization
+  - 🌐 Network graph relationships
+  - ⚙️ Configuration management
+
+### **Backend API (FastAPI)**
+- **Purpose**: Core application logic and API services
+- **Port**: 8000 (configurable)
+- **Technology**: Python 3.11 + FastAPI + Async/Await
+- **Key Services**:
+  - 🔍 **Java Parser Service**: AST analysis with Struts/CORBA detection
+  - 🧠 **CodeBERT Service**: Semantic embeddings with GPU optimization
+  - 📊 **Graphiti Service**: Knowledge graph with temporal relationships
+  - 📁 **Repository Service**: Git cloning and dependency discovery
+  - 🏥 **Health Service**: Comprehensive system monitoring
+
+### **LiteLLM Bedrock Proxy**
+- **Purpose**: OpenAI-compatible API for AWS Bedrock
+- **Port**: 8001 (configurable)
+- **Technology**: LiteLLM proxy with AWS SDK
+- **Features**:
+  - 🔄 OpenAI API format translation
+  - 🔐 AWS credential management
+  - 📊 Request/response logging
+  - ⚡ Connection pooling
+
+### **Neo4j Knowledge Graph**
+- **Purpose**: Temporal knowledge graph storage
+- **Ports**: 7474 (HTTP), 7687 (Bolt)
+- **Technology**: Neo4j 5.15 with APOC plugins
+- **Data Model**:
+  - 📦 Java classes, methods, fields
+  - 🔗 Inheritance and dependency relationships
+  - 📋 Business rules and logic patterns
+  - ⏰ Temporal relationship tracking
+
+### **Redis Cache**
+- **Purpose**: High-performance caching layer
+- **Port**: 6379 (configurable)
+- **Technology**: Redis 7-alpine
+- **Cached Data**:
+  - 🧠 CodeBERT embeddings
+  - 📊 Analysis results
+  - 🔍 Search query results
+  - 📈 Performance metrics
   - Network graphs for code relationships
   - Real-time analysis progress tracking
 

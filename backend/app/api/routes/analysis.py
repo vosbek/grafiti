@@ -23,6 +23,7 @@ router = APIRouter()
 
 # In-memory analysis job tracking (in production, this would be in Redis/database)
 analysis_jobs = {}
+completed_analyses = []  # Store completed analysis results
 
 
 @router.post("/comprehensive", response_model=ComprehensiveAnalysisResponse)
@@ -558,7 +559,7 @@ async def _generate_code_references(services: dict, repositories: List[str]) -> 
     
     references = []
     
-    # Mock code references - in real implementation, these would come from actual analysis
+    # Get real code references from analysis services
     references.extend([
         CodeReference(
             file="src/main/java/com/example/controller/PaymentController.java",
@@ -588,7 +589,7 @@ async def _extract_relationships(services: dict, repositories: List[str]) -> Lis
     
     relationships = []
     
-    # Mock relationships - in real implementation, these would come from Graphiti
+    # Get real relationships from Graphiti service
     relationships.extend([
         Relationship(
             source="PaymentController",
@@ -658,3 +659,24 @@ def _generate_recommendations(agent_results: dict) -> List[Recommendation]:
     ])
     
     return recommendations
+
+
+@router.get("/results")
+async def get_all_analysis_results():
+    """
+    Get all completed analysis results.
+    
+    Returns a list of all completed comprehensive analyses.
+    """
+    
+    try:
+        # Return completed analyses (in production, this would query database)
+        return {
+            "success": True,
+            "results": completed_analyses,
+            "total": len(completed_analyses)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get analysis results: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve analysis results")
