@@ -1,0 +1,18 @@
+model_list:
+  - model_name: gpt-4
+    litellm_params:
+      model: bedrock/anthropic.claude-3-sonnet-20240229-v1:0
+      aws_region_name: us-east-1
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+  
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: bedrock/anthropic.claude-3-haiku-20240307-v1:0
+      aws_region_name: us-east-1
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+
+general_settings:
+  master_key: sk-bedrock-proxy-key
+  database_url: null

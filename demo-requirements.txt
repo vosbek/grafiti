@@ -1,0 +1,2 @@
+# Minimal requirements for demo script
+requests>=2.25.0
